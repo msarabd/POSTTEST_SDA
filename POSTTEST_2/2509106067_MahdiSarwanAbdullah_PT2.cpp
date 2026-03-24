@@ -27,6 +27,10 @@ void tampilkan(string menu, int a, int b){
     cout << "Pilih (" << a << "-" << b << "): "; 
 };
 
+void tampilkan(string kata){
+    cout << kata << endl;
+}
+
 void swap(hewan* a, hewan* b){
     hewan temp = *a;
     *a = *b;
@@ -272,6 +276,16 @@ int main(){
 =============================================
 )";
 
+string akhir_program = R"(===================================================
+ ____   _   _   _____   _____   _   _   _____   _ 
+ / ___| | | | || ____||_   _|| | | || ____|| |     
+ \\___ \\ | | | ||  _|    | |  | |_| ||  _|  | |   
+  ___) || |_| || |___   | |  |  _  || |___ |_|     
+ |____/  \\___/ |_____|  |_|  |_| |_||_____|(_)    
+                                                   
+            PROGRAM BERHASIL DISELESAIKAN          
+===================================================)";
+
     int panjang_hewan = 15;
     bool token_login = true;
     int pilihan_1;
@@ -305,5 +319,8 @@ int main(){
         }
 
     }
+    
+    cls();
+    tampilkan(akhir_program);
     return 0;
 }
