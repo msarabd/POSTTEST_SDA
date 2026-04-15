@@ -13,6 +13,18 @@ struct hewan{
     string spek;
 };
 
+struct queue{
+    int id_hewan;
+    string nama;
+    string keluhan;
+};
+
+struct stack{
+    int id_hewan;
+    string nama;
+    string keluhan;
+};
+
 void cls() {
     #ifdef _WIN32
         system("cls");
@@ -120,8 +132,6 @@ void sortCustom(hewan arr[], int panjang){
             }
         }
     }
-
-    cout << "(Sorting by id berhasil)" << endl;
 }
 
 void linearSearch(hewan* arr, int* panjang){
@@ -244,6 +254,140 @@ void selectionSort(hewan arr[], int panjang){
     cin.get();
 }
 
+bool isAntrianfull(int front, int rear){
+    return rear == max_hewan - 1;
+}
+
+bool isAntrianempty(int front, int rear){
+    return front > rear || front == rear == -1;
+}
+
+bool isRiwayatfull(int top){
+    return top == max_hewan - 1;
+}
+
+bool isRiwayatempty(int top){
+    return top == -1;
+}
+
+void tampilAntrian(queue arr[], int front, int rear){
+    if (isAntrianempty(front, rear)){
+        cin.ignore();
+        cout << "(List kosong, tidak ada data yang bisa dilihat)";
+        cin.get();
+    
+    } else {
+        cout << setfill('=') << setw(116) << "=" << endl;
+        cout << setfill(' ');
+    
+        cout << "| " << left << setw(4)  << "NO" 
+            << "| " << setw(10) << "ID"
+            << "| " << setw(15) << "NAMA HEWAN"  
+            << "| " << setw(77) << "KELUHAN" << " |" << endl;
+    
+        cout << setfill('-') << setw(116) << "-" << endl;
+        cout << setfill(' '); 
+        
+        int j = 1;
+        for (int i = front; i <= rear; i++) {
+            cout << "| " << left << setw(4) << j
+                << "| " << setw(10) << arr[i].id_hewan
+                << "| " << setw(15) << arr[i].nama
+                << "| " << setw(77) << arr[i].keluhan << " |" << endl;
+            j++;
+        }
+        
+        cout << setfill('=') << setw(116) << "=" << endl;
+        cout << setfill(' ');
+    }
+}
+
+void tampilRiwayat(stack arr[], int top){
+    cls();
+    if (isRiwayatempty(top)){
+        cin.ignore();
+        cout << "(List kosong, tidak ada data yang bisa dilihat)";
+        cin.get();
+    
+    } else {
+        cout << setfill('=') << setw(116) << "=" << endl;
+        cout << setfill(' ');
+    
+        cout << "| " << left << setw(4)  << "NO" 
+            << "| " << setw(10) << "ID"
+            << "| " << setw(15) << "NAMA HEWAN"  
+            << "| " << setw(77) << "KELUHAN" << " |" << endl;
+    
+        cout << setfill('-') << setw(116) << "-" << endl;
+        cout << setfill(' '); 
+        
+        for (int i = top; i >= 0; i--) {
+            cout << "| " << left << setw(4) << (top - i + 1)
+                << "| " << setw(10) << arr[i].id_hewan
+                << "| " << setw(15) << arr[i].nama
+                << "| " << setw(77) << arr[i].keluhan << " |" << endl;
+        }
+        
+        cout << setfill('=') << setw(116) << "=" << endl;
+        cout << setfill(' ');
+        cin.ignore();
+        cout << "\n(Ketuk enter untuk kembali)";
+        cin.get();
+    }
+}
+
+void push(stack arr[], int& top, queue pasien){
+    if (isRiwayatfull(top)){
+        cin.ignore();
+        cout << "(Riwayat penuh, tidak bisa menambah data riwayat baru)";
+        cin.get();
+    
+    } else {
+        top++;
+        arr[top].id_hewan = pasien.id_hewan;
+        arr[top].nama = pasien.nama;
+        arr[top].keluhan = pasien.keluhan;
+    }
+}
+
+void enqueue(queue arr[], int& front, int& rear){
+    cls();
+    if (isAntrianfull(front, rear)){
+        cin.ignore();
+        cout << "(Antrian penuh, tidak bisa menambah pasien baru)";
+        cin.get();
+    
+    } else{
+        rear++;
+        cin.ignore();
+        cout << "Nama pasien: ";
+        getline(cin, arr[rear].nama);
+        cout << "Keluhan: ";
+        getline(cin, arr[rear].keluhan);
+        arr[rear].id_hewan = 7001 + rear;
+        tampilAntrian(arr, front, rear);
+        cout << "\n(Ketuk enter untuk kembali)";
+        cin.get();
+    }
+}
+
+void dequeue(queue antrian[], stack riwayat[], int& front, int& rear, int& top){
+    cls();
+    if (isAntrianempty(front, rear)){
+        cin.ignore();
+        cout << "(Antrian kosong, tidak ada pasien yang bisa dipanggil)";
+        cin.get();
+    
+    } else {
+        cout << "Pasien yang dipanggil: " << antrian[front].nama << " (" << antrian[front].id_hewan << ")" << endl;
+        push(riwayat, top, antrian[front]);
+        front++;
+        cin.ignore();
+        cout << "\n(Ketuk enter untuk kembali)";
+        cin.get();
+    }
+}
+
 int main(){
     hewan petshop[max_hewan] = {
         {7001, "gajah", 850000000,  "Boros pakan, butuh lahan raksasa"},
@@ -263,20 +407,42 @@ int main(){
         {7012, "shoebill", 120000000,  "Antisosial & sangat pendiam"},
     };
 
-    string menu_utama = R"(=============================================
-|              MAU NGAPAIN CUY?             |
-=============================================
-| 1) Read                                   |
-| 2) Create                                 |
-| 3) Cari by nama hewan (Linear Search)     |
-| 4) Cari by ID hewan (Fibonacci Search)    |
-| 5) Urut by nama hewan (Buble Sort)        |
-| 6) Urut by harga (Selection Sort)         |
-| 7) 
+    queue antrian[max_hewan] = {
+        {7001, "Gajah", "Makannya sangat boros dan membutuhkan lahan yang sangat luas."},
+        {7002, "Narwhal", "Gadingnya sangat rapuh dan sangat mudah patah atau retak."},
+        {7003, "Zebra", "Memiliki sifat liar yang membuatnya mustahil untuk dijinakkan."},
+        {7004, "Bunglon", "Sangat mudah stres dan sangat sensitif terhadap perubahan suhu."},
+        {7005, "Platipus", "Memiliki taji di bagian kaki yang beracun dan menyengat."},
+        {7006, "Ubur-ubur", "Struktur tubuh lemah, sangat mudah hancur saat dimangsa predator."},
+        {7007, "Koala", "Terlalu banyak tidur dan memiliki ukuran otak yang cenderung kecil."},
+        {7008, "Panda", "Sangat malas dan memiliki diet yang kaku karena hanya mau makan bambu."},
+        {7009, "Axolotl", "Kondisi fisik sangat rentan; air kotor sedikit bisa menyebabkan kematian."},
+        {7010, "Sloth", "Gerakannya sangat lamban dan memiliki pertahanan fisik yang lemah."},
+        {7011, "Kuda Nil", "Sangat agresif dan memiliki kecenderungan tinggi untuk menyerang."},
+        {7012, "Shoebill", "Memiliki sifat antisosial dan cenderung sangat pendiam atau pasif."},
+        {7013, "Pinguin", "Memiliki gerakan yang sangat kaku dan lambat saat berada di daratan."},
+        {7014, "Harimau", "Sangat antisosial dan memiliki sifat teritorial yang ekstrem."},
+        {7015, "Jerapah", "Jantung harus bekerja ekstra keras, serta kesulitan saat posisi minum."},
+    };
 
+    stack riwayat[max_hewan];
 
-| 0) Keluar                                 |
-=============================================
+    string menu_utama = R"(=============================================================
+|                      MAU NGAPAIN CUY?                     |
+=============================================================
+| 1) Read                                                   |
+| 2) Create                                                 |
+| 3) Cari by nama hewan (Linear Search)                     |
+| 4) Cari by ID hewan (Fibonacci Search)                    |
+| 5) Urut by nama hewan (Buble Sort)                        |
+| 6) Urut by harga (Selection Sort)                         |
+| 7) Antrian pemeriksaan (Enqueue)                          |
+| 8) Panggil pasien (Dequeue)                               |
+| 9) Riwayat tindakan (Stack)                               |
+| 10) Batalkan tindakan terakhir (pop)                      |
+| 11) Tampilkan pasien terdepan & tindakan terakhir (peek)  |
+| 0) Keluar                                                 |
+=============================================================
 )";
 
 string akhir_program = R"(===================================================
@@ -293,9 +459,10 @@ string akhir_program = R"(===================================================
     bool token_login = true;
     int pilihan_1;
     int front = 0, rear = 14;
+    int top = -1;
     
     while (token_login) {
-        tampilkan(menu_utama, 0, 6);
+        tampilkan(menu_utama, 0, 11);
         cin >> pilihan_1;
 
         switch (pilihan_1){
@@ -319,6 +486,15 @@ string akhir_program = R"(===================================================
                 break;
             case 6:
                 selectionSort(petshop, panjang_hewan);
+                break;
+            case 7:
+                enqueue(antrian, front, rear);
+                break;
+            case 8:
+                dequeue(antrian, riwayat, front, rear, top);
+                break;
+            case 9:
+                tampilRiwayat(riwayat, top);
                 break;
         }
 
