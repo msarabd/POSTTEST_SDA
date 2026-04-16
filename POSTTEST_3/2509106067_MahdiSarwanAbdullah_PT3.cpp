@@ -4,7 +4,7 @@
 #include <cstdlib>
 using namespace std;
 
-#define max_hewan 200
+#define max_hewan 100
 
 struct hewan{
     int id_hewan;
@@ -128,7 +128,7 @@ void sortCustom(hewan arr[], int panjang){
     for (int i = 0; i < panjang - 1; i++){
         for (int j = 0; j < panjang - 1 - i; j++){
             if (arr[j].id_hewan > arr[j + 1].id_hewan){
-                swap(&arr[j], &arr[j + 1]);
+                swap(arr+ j, arr + j + 1);
             }
         }
     }
@@ -202,7 +202,7 @@ void fibonacciSearch(hewan* arr, int* panjang){
             cout << (arr + index)->id_hewan << " > " << target << endl;
             fib = fib2;
             fib1 = fib1 - fib2;
-            fib2 = fib2 - fib1;
+            fib2 = fib - fib1;
         }
 
         cout << "(tidak ditemukan)" << endl;
@@ -219,7 +219,7 @@ void bubleSort(hewan arr[], int panjang){
     for (int i = 0; i < panjang - 1; i++){
         for (int j = 0; j < panjang - 1 - i; j++){
             if (arr[j].nama > arr[j + 1].nama){
-                swap(&arr[j], &arr[j + 1]);
+                swap(arr + j, arr + j + 1);
             }
         }
     }
@@ -246,7 +246,7 @@ void selectionSort(hewan arr[], int panjang){
     cls();
     for (int i = 0; i < panjang - 1; i++){
         index_min = min(arr, i, panjang);
-        swap(arr[i], arr[index_min]);
+        swap(arr + i, arr + index_min);
     }
     
     cin.ignore();
@@ -270,7 +270,7 @@ bool isRiwayatempty(int top){
     return top == -1;
 }
 
-void tampilAntrian(queue arr[], int front, int rear){
+void tampilAntrian(queue* arr, int front, int rear){
     if (isAntrianempty(front, rear)){
         cin.ignore();
         cout << "(List kosong, tidak ada data yang bisa dilihat)";
@@ -291,9 +291,9 @@ void tampilAntrian(queue arr[], int front, int rear){
         int j = 1;
         for (int i = front; i <= rear; i++) {
             cout << "| " << left << setw(4) << j
-                << "| " << setw(10) << arr[i].id_hewan
-                << "| " << setw(15) << arr[i].nama
-                << "| " << setw(77) << arr[i].keluhan << " |" << endl;
+                << "| " << setw(10) << (arr + i)->id_hewan
+                << "| " << setw(15) << (arr + i)->nama
+                << "| " << setw(77) << (arr + i)->keluhan << " |" << endl;
             j++;
         }
         
@@ -302,7 +302,7 @@ void tampilAntrian(queue arr[], int front, int rear){
     }
 }
 
-void tampilRiwayat(stack arr[], int top){
+void tampilRiwayat(stack* arr, int top){
     cls();
     if (isRiwayatempty(top)){
         cin.ignore();
@@ -323,9 +323,9 @@ void tampilRiwayat(stack arr[], int top){
         
         for (int i = top; i >= 0; i--) {
             cout << "| " << left << setw(4) << (top - i + 1)
-                << "| " << setw(10) << arr[i].id_hewan
-                << "| " << setw(15) << arr[i].nama
-                << "| " << setw(77) << arr[i].keluhan << " |" << endl;
+                << "| " << setw(10) << (arr + i)->id_hewan
+                << "| " << setw(15) << (arr + i)->nama
+                << "| " << setw(77) << (arr + i)->keluhan << " |" << endl;
         }
         
         cout << setfill('=') << setw(116) << "=" << endl;
@@ -350,6 +350,41 @@ void push(stack arr[], int& top, queue pasien){
     }
 }
 
+void pop(stack arr[], int& top, int& front){
+    cls();
+    if (isRiwayatempty(top)){
+        cin.ignore();
+        cout << "(Riwayat kosong, tidak ada data yang bisa dihapus)";
+        cin.get();
+    
+    } else {
+        top--;
+        front--;
+        cin.ignore();
+        cout << "(Tindakan terakhir berhasil dibatalkan)";
+        cin.get();
+    }
+}
+
+void peek(stack arr[], queue terdepan, int top, int front, int rear){
+    cls();
+    if (isRiwayatempty(top)){
+        cout << "(Riwayat kosong, tidak ada data yang bisa dilihat)" << endl;
+    } else {
+        cout << "Tindakan terakhir: " << arr[top].nama << " (" << arr[top].id_hewan << ")" << endl;
+    }
+
+    if (isAntrianempty(front, rear)){
+        cout << "(Antrian kosong, tidak ada data yang bisa dilihat)";
+    } else {
+        cout << "Pasien terdepan: " << terdepan.nama << " (" << terdepan.id_hewan << ")" << endl;
+    }
+
+    cin.ignore();
+    cout << "\n(Ketuk enter untuk kembali)";
+    cin.get();
+}
+
 void enqueue(queue arr[], int& front, int& rear){
     cls();
     if (isAntrianfull(front, rear)){
@@ -371,7 +406,7 @@ void enqueue(queue arr[], int& front, int& rear){
     }
 }
 
-void dequeue(queue antrian[], stack riwayat[], int& front, int& rear, int& top){
+void dequeue(queue arr1[], stack arr2[], int& front, int& rear, int& top){
     cls();
     if (isAntrianempty(front, rear)){
         cin.ignore();
@@ -379,8 +414,8 @@ void dequeue(queue antrian[], stack riwayat[], int& front, int& rear, int& top){
         cin.get();
     
     } else {
-        cout << "Pasien yang dipanggil: " << antrian[front].nama << " (" << antrian[front].id_hewan << ")" << endl;
-        push(riwayat, top, antrian[front]);
+        cout << "Pasien yang dipanggil: " << arr1[front].nama << " (" << arr1[front].id_hewan << ")" << endl;
+        push(arr2, top, arr1[front]);
         front++;
         cin.ignore();
         cout << "\n(Ketuk enter untuk kembali)";
@@ -496,8 +531,13 @@ string akhir_program = R"(===================================================
             case 9:
                 tampilRiwayat(riwayat, top);
                 break;
+            case 10:
+                pop(riwayat, top, front);
+                break;
+            case 11:
+                peek(riwayat, antrian[front], top, front, rear);
+                break;
         }
-
     }
     
     cls();
