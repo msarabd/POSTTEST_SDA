@@ -59,7 +59,7 @@ void tampilkanStokSembako(BarangNode* head) {
     
     BarangNode* temp = head;
     do {
-        cout << temp->namaBarang << ": " << temp->stok << endl;
+        cout << "- " << temp->namaBarang << ": " << temp->stok << endl;
         temp = temp->next;
     } while (temp != head);
 }
